@@ -16,10 +16,12 @@ export interface SortingState extends BaseState {
 	sorted?: number[];
 }
 
+export type AlgorithmCategory = "sorting" | "curves" | "pathfinding";
+
 export interface AlgorithmDefinition<TState extends BaseState = BaseState> {
 	id: string;
 	name: string;
-	category: "sorting" | "curves" | "pathfinding";
+	category: AlgorithmCategory;
 	sourceCode: string;
 	defaultInput: () => unknown;
 	computeSteps: (input: unknown) => TState[];
