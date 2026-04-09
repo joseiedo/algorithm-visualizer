@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { DEFAULT_ALGORITHM_ROUTE } from "@/app/routes";
 import { AlgorithmView } from "@/components/AlgorithmView";
 
 export default function App() {
@@ -6,7 +7,7 @@ export default function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/:category/:id" element={<AlgorithmView />} />
-        <Route path="*" element={<Navigate to="/sorting/bubble-sort" replace />} />
+        <Route path="*" element={<Navigate to={DEFAULT_ALGORITHM_ROUTE} replace />} />
       </Routes>
     </BrowserRouter>
   );

@@ -1,5 +1,6 @@
 import { useState, useCallback } from "react";
 import { useParams, Navigate } from "react-router-dom";
+import { DEFAULT_ALGORITHM_ROUTE } from "@/app/routes";
 import { getAlgorithm, algorithms } from "@/algorithms/registry";
 import { useAlgorithmRunner } from "@/engine/useAlgorithmRunner";
 import { usePlayback } from "@/engine/usePlayback";
@@ -21,7 +22,7 @@ export function AlgorithmView() {
 	}, []);
 
 	if (id && !getAlgorithm(id)) {
-		return <Navigate to="/sorting/bubble-sort" replace />;
+		return <Navigate to={DEFAULT_ALGORITHM_ROUTE} replace />;
 	}
 
 	return (
