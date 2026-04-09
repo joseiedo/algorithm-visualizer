@@ -1,6 +1,7 @@
 export interface BaseState {
 	line: number;
 	explanation?: string;
+	annotations?: Record<number, string>;
 }
 
 export interface SortingElement {

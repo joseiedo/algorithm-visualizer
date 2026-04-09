@@ -46,6 +46,7 @@ export function AlgorithmView() {
 						<CodePanel
 							sourceCode={algorithm.sourceCode}
 							activeLine={currentState?.line ?? null}
+							annotations={currentState?.annotations}
 						/>
 					}
 				/>
