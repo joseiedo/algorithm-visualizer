@@ -1,11 +1,13 @@
-import { Play, Pause, SkipForward, RotateCcw } from "lucide-react";
+import { Play, Pause, SkipBack, SkipForward, RotateCcw } from "lucide-react";
 
 interface PlaybackControlsProps {
 	isPlaying: boolean;
 	isDone: boolean;
+	canStepBack: boolean;
 	speed: number;
 	onTogglePlay: () => void;
 	onStep: () => void;
+	onStepBack: () => void;
 	onReset: () => void;
 	onSpeedChange: (speed: number) => void;
 }
@@ -13,19 +15,28 @@ interface PlaybackControlsProps {
 export function PlaybackControls({
 	isPlaying,
 	isDone,
+	canStepBack,
 	speed,
 	onTogglePlay,
 	onStep,
+	onStepBack,
 	onReset,
 	onSpeedChange,
 }: PlaybackControlsProps) {
 	return (
 		<div className="flex items-center gap-3">
 			<button
+				onClick={onStepBack}
+				disabled={isPlaying || !canStepBack}
+				className="rounded-md bg-[hsl(var(--accent))] p-2 transition-colors hover:bg-[hsl(var(--ring))] disabled:opacity-40"
+			>
+				<SkipBack size={16} />
+			</button>
+
+			<button
 				onClick={onTogglePlay}
 				disabled={isDone}
-				className="rounded-md bg-[hsl(var(--accent))] p-2 transition-colors
-  hover:bg-[hsl(var(--ring))] disabled:opacity-40"
+				className="rounded-md bg-[hsl(var(--accent))] p-2 transition-colors hover:bg-[hsl(var(--ring))] disabled:opacity-40"
 			>
 				{isPlaying ? <Pause size={16} /> : <Play size={16} />}
 			</button>
@@ -33,8 +44,7 @@ export function PlaybackControls({
 			<button
 				onClick={onStep}
 				disabled={isPlaying || isDone}
-				className="rounded-md bg-[hsl(var(--accent))] p-2 transition-colors
-  hover:bg-[hsl(var(--ring))] disabled:opacity-40"
+				className="rounded-md bg-[hsl(var(--accent))] p-2 transition-colors hover:bg-[hsl(var(--ring))] disabled:opacity-40"
 			>
 				<SkipForward size={16} />
 			</button>

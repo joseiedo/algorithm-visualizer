@@ -22,6 +22,6 @@ export interface AlgorithmDefinition<TState extends BaseState = BaseState> {
 	category: "sorting" | "curves" | "pathfinding";
 	sourceCode: string;
 	defaultInput: () => unknown;
-	generator: (input: unknown) => Generator<TState, void, unknown>;
+	computeSteps: (input: unknown) => TState[];
 	renderer: "sorting" | "bezier" | "pathfinding";
 }

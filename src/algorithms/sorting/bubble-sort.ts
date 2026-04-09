@@ -29,42 +29,45 @@ function snap(arr: SortingElement[]) {
 	return arr.map((el) => ({ ...el }));
 }
 
-function* generator(input: unknown): Generator<SortingState, void, unknown> {
+function computeSteps(input: unknown): SortingState[] {
+	const steps: SortingState[] = [];
 	const raw = input as number[];
 	const arr: SortingElement[] = raw.map((value, i) => ({ id: i, value }));
 	const sorted: number[] = [];
 
-	yield { array: snap(arr), line: 1, sorted: [], explanation: `Bubble sort receives an unsorted array of ${arr.length} elements. The idea: repeatedly walk through the array, compare neighbors, and swap if they're out of order. The largest unsorted value "bubbles up" to the end each pass.` };
+	steps.push({ array: snap(arr), line: 1, sorted: [], explanation: `Bubble sort receives an unsorted array of ${arr.length} elements. The idea: repeatedly walk through the array, compare neighbors, and swap if they're out of order. The largest unsorted value "bubbles up" to the end each pass.` });
 
 	for (let i = 0; i < arr.length; i++) {
 		const remaining = arr.length - i;
-		yield { array: snap(arr), line: 2, sorted: [...sorted], explanation: `Starting pass ${i + 1}. We have ${remaining} unsorted elements to check. After this pass, the largest among them will land at index ${arr.length - 1 - i}.` };
+		steps.push({ array: snap(arr), line: 2, sorted: [...sorted], explanation: `Starting pass ${i + 1}. We have ${remaining} unsorted elements to check. After this pass, the largest among them will land at index ${arr.length - 1 - i}.` });
 
 		for (let j = 0; j < arr.length - i - 1; j++) {
-			yield { array: snap(arr), line: 3, comparing: [j, j + 1], sorted: [...sorted], explanation: `Inner loop: j = ${j}. We'll compare arr[${j}] and arr[${j + 1}].` };
+			steps.push({ array: snap(arr), line: 3, comparing: [j, j + 1], sorted: [...sorted], explanation: `Inner loop: j = ${j}. We'll compare arr[${j}] and arr[${j + 1}].` });
 
 			const isGreater = arr[j].value > arr[j + 1].value;
 
 			if (isGreater) {
-				yield { array: snap(arr), line: 4, comparing: [j, j + 1], sorted: [...sorted], explanation: `arr[${j}] = ${arr[j].value} is greater than arr[${j + 1}] = ${arr[j + 1].value}. They're out of order — we need to swap.`, annotations: { 4: `${arr[j].value} > ${arr[j + 1].value} → true` } };
+				steps.push({ array: snap(arr), line: 4, comparing: [j, j + 1], sorted: [...sorted], explanation: `arr[${j}] = ${arr[j].value} is greater than arr[${j + 1}] = ${arr[j + 1].value}. They're out of order — we need to swap.`, annotations: { 4: `${arr[j].value} > ${arr[j + 1].value} → true` } });
 				const tempVal = arr[j].value;
-				yield { array: snap(arr), line: 5, comparing: [j, j + 1], sorted: [...sorted], explanation: `Store arr[${j}] = ${tempVal} in temp variable.`, annotations: { 5: `temp = ${tempVal}` } };
+				steps.push({ array: snap(arr), line: 5, comparing: [j, j + 1], sorted: [...sorted], explanation: `Store arr[${j}] = ${tempVal} in temp variable.`, annotations: { 5: `temp = ${tempVal}` } });
 				[arr[j], arr[j + 1]] = [arr[j + 1], arr[j]];
-				yield { array: snap(arr), line: 6, swapped: [j, j + 1], sorted: [...sorted], explanation: `Set arr[${j}] = arr[${j + 1}] = ${arr[j].value}.` };
-				yield { array: snap(arr), line: 7, swapped: [j, j + 1], sorted: [...sorted], explanation: `Set arr[${j + 1}] = temp = ${arr[j + 1].value}. Swap complete!` };
-				yield { array: snap(arr), line: 8, sorted: [...sorted] };
+				steps.push({ array: snap(arr), line: 6, swapped: [j, j + 1], sorted: [...sorted], explanation: `Set arr[${j}] = arr[${j + 1}] = ${arr[j].value}.` });
+				steps.push({ array: snap(arr), line: 7, swapped: [j, j + 1], sorted: [...sorted], explanation: `Set arr[${j + 1}] = temp = ${arr[j + 1].value}. Swap complete!` });
+				steps.push({ array: snap(arr), line: 8, sorted: [...sorted] });
 			} else {
-				yield { array: snap(arr), line: 4, comparing: [j, j + 1], sorted: [...sorted], explanation: `arr[${j}] = ${arr[j].value} <= arr[${j + 1}] = ${arr[j + 1].value}. Already in order — no swap needed.`, annotations: { 4: `${arr[j].value} > ${arr[j + 1].value} → false` } };
+				steps.push({ array: snap(arr), line: 4, comparing: [j, j + 1], sorted: [...sorted], explanation: `arr[${j}] = ${arr[j].value} <= arr[${j + 1}] = ${arr[j + 1].value}. Already in order — no swap needed.`, annotations: { 4: `${arr[j].value} > ${arr[j + 1].value} → false` } });
 			}
 
-			yield { array: snap(arr), line: 9, sorted: [...sorted], explanation: `Done comparing index ${j} and ${j + 1}. Moving to the next pair.` };
+			steps.push({ array: snap(arr), line: 9, sorted: [...sorted], explanation: `Done comparing index ${j} and ${j + 1}. Moving to the next pair.` });
 		}
 
 		sorted.push(arr.length - 1 - i);
-		yield { array: snap(arr), line: 10, sorted: [...sorted], explanation: `Pass ${i + 1} complete. ${arr[arr.length - 1 - i].value} bubbled to index ${arr.length - 1 - i} and is now in its final sorted position. ${sorted.length} of ${arr.length} elements are sorted.` };
+		steps.push({ array: snap(arr), line: 10, sorted: [...sorted], explanation: `Pass ${i + 1} complete. ${arr[arr.length - 1 - i].value} bubbled to index ${arr.length - 1 - i} and is now in its final sorted position. ${sorted.length} of ${arr.length} elements are sorted.` });
 	}
 
-	yield { array: snap(arr), line: 11, sorted: arr.map((_, i) => i), explanation: `All passes complete. Every element is in its correct position. The array is fully sorted!` };
+	steps.push({ array: snap(arr), line: 11, sorted: arr.map((_, i) => i), explanation: `All passes complete. Every element is in its correct position. The array is fully sorted!` });
+
+	return steps;
 }
 
 function defaultInput() {
@@ -77,6 +80,6 @@ export const bubbleSort: AlgorithmDefinition<SortingState> = {
 	category: "sorting",
 	sourceCode,
 	defaultInput,
-	generator,
+	computeSteps,
 	renderer: "sorting",
 };

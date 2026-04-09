@@ -1,44 +1,47 @@
 import { useState, useCallback } from "react";
 import type { AlgorithmDefinition } from "@/algorithms/types";
+import { StepEngine } from "./StepEngine";
 
-function initGenerator(algorithm: AlgorithmDefinition) {
+function createEngine(algorithm: AlgorithmDefinition) {
 	const input = algorithm.defaultInput();
-	const gen = algorithm.generator(input);
-	const first = gen.next();
-	return { gen, state: first.done ? null : first.value };
+	const steps = algorithm.computeSteps(input);
+	return new StepEngine(steps);
 }
 
 export function useAlgorithmRunner(algorithm: AlgorithmDefinition) {
-	const [genState, setGenState] = useState(() => initGenerator(algorithm));
+	const [engine, setEngine] = useState(() => createEngine(algorithm));
 	const [algorithmId, setAlgorithmId] = useState(algorithm.id);
-	const [isDone, setIsDone] = useState(false);
+	const [, forceRender] = useState(0);
 
 	if (algorithm.id !== algorithmId) {
 		setAlgorithmId(algorithm.id);
-		setGenState(initGenerator(algorithm));
-		setIsDone(false);
+		setEngine(createEngine(algorithm));
 	}
 
+	const rerender = useCallback(() => forceRender((n) => n + 1), []);
+
 	const step = useCallback(() => {
-		let hasMore = true;
-		setGenState((prev) => {
-			const result = prev.gen.next();
-			if (result.done) {
-				hasMore = false;
-				return prev;
-			}
-			return { gen: prev.gen, state: result.value };
-		});
-		if (!hasMore) {
-			setIsDone(true);
-		}
+		const hasMore = engine.stepForward();
+		rerender();
 		return hasMore;
-	}, []);
+	}, [engine, rerender]);
+
+	const stepBack = useCallback(() => {
+		engine.stepBack();
+		rerender();
+	}, [engine, rerender]);
 
 	const reset = useCallback(() => {
-		setGenState(initGenerator(algorithm));
-		setIsDone(false);
-	}, [algorithm]);
+		engine.reset();
+		rerender();
+	}, [engine, rerender]);
 
-	return { currentState: genState.state, isDone, step, reset };
+	return {
+		currentState: engine.current,
+		isDone: engine.isDone,
+		canStepBack: engine.canStepBack,
+		step,
+		stepBack,
+		reset,
+	};
 }

@@ -12,7 +12,7 @@ import { PlaybackControls } from "./controls/PlaybackControls";
 export function AlgorithmView() {
 	const { id } = useParams();
 	const algorithm = getAlgorithm(id ?? "") ?? algorithms[0];
-	const { currentState, isDone, step, reset } = useAlgorithmRunner(algorithm);
+	const { currentState, isDone, canStepBack, step, stepBack, reset } = useAlgorithmRunner(algorithm);
 	const playback = usePlayback({ step, reset });
 	const [layout, setLayout] = useState<"horizontal" | "vertical">("vertical");
 
@@ -32,9 +32,11 @@ export function AlgorithmView() {
 					<PlaybackControls
 						isPlaying={playback.isPlaying}
 						isDone={isDone}
+						canStepBack={canStepBack}
 						speed={playback.speed}
 						onTogglePlay={playback.togglePlay}
 						onStep={step}
+						onStepBack={stepBack}
 						onReset={playback.reset}
 						onSpeedChange={playback.setSpeed}
 					/>
