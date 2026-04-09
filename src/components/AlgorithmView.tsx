@@ -1,3 +1,4 @@
+import { useState, useCallback } from "react";
 import { useParams, Navigate } from "react-router-dom";
 import { getAlgorithm, algorithms } from "@/algorithms/registry";
 import { useAlgorithmRunner } from "@/engine/useAlgorithmRunner";
@@ -13,6 +14,11 @@ export function AlgorithmView() {
 	const algorithm = getAlgorithm(id ?? "") ?? algorithms[0];
 	const { currentState, isDone, step, reset } = useAlgorithmRunner(algorithm);
 	const playback = usePlayback({ step, reset });
+	const [layout, setLayout] = useState<"horizontal" | "vertical">("vertical");
+
+	const toggleLayout = useCallback(() => {
+		setLayout((prev) => (prev === "vertical" ? "horizontal" : "vertical"));
+	}, []);
 
 	if (id && !getAlgorithm(id)) {
 		return <Navigate to="/sorting/bubble-sort" replace />;
@@ -33,16 +39,19 @@ export function AlgorithmView() {
 						onSpeedChange={playback.setSpeed}
 					/>
 				}
+				layout={layout}
+				onToggleLayout={toggleLayout}
 			/>
 			<div className="flex-1 overflow-hidden">
 				<SplitView
-					top={
+					direction={layout}
+					first={
 						<VizPanel
 							state={currentState}
 							renderer={algorithm.renderer}
 						/>
 					}
-					bottom={
+					second={
 						<CodePanel
 							sourceCode={algorithm.sourceCode}
 							activeLine={currentState?.line ?? null}

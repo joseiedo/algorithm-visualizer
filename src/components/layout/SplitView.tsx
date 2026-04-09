@@ -1,20 +1,24 @@
 import { useState, useCallback, useRef, type ReactNode } from "react";
 
 interface SplitViewProps {
-	top: ReactNode;
-	bottom: ReactNode;
+	first: ReactNode;
+	second: ReactNode;
+	direction: "horizontal" | "vertical";
 }
 
-export function SplitView({ top, bottom }: SplitViewProps) {
-	const [topHeight, setTopHeight] = useState(55);
+export function SplitView({ first, second, direction }: SplitViewProps) {
+	const [split, setSplit] = useState(55);
 	const containerRef = useRef<HTMLDivElement>(null);
+	const isVertical = direction === "vertical";
 
 	const handleMouseDown = useCallback(() => {
 		const onMouseMove = (e: MouseEvent) => {
 			if (!containerRef.current) return;
 			const rect = containerRef.current.getBoundingClientRect();
-			const pct = ((e.clientY - rect.top) / rect.height) * 100;
-			setTopHeight(Math.min(80, Math.max(20, pct)));
+			const pct = isVertical
+				? ((e.clientY - rect.top) / rect.height) * 100
+				: ((e.clientX - rect.left) / rect.width) * 100;
+			setSplit(Math.min(80, Math.max(20, pct)));
 		};
 
 		const onMouseUp = () => {
@@ -26,21 +30,31 @@ export function SplitView({ top, bottom }: SplitViewProps) {
 
 		document.addEventListener("mousemove", onMouseMove);
 		document.addEventListener("mouseup", onMouseUp);
-		document.body.style.cursor = "row-resize";
+		document.body.style.cursor = isVertical ? "row-resize" : "col-resize";
 		document.body.style.userSelect = "none";
-	}, []);
+	}, [isVertical]);
 
 	return (
-		<div ref={containerRef} className="flex h-full flex-col">
-			<div style={{ height: `${topHeight}%` }} className="w-full overflow-hidden p-4">
-				{top}
+		<div ref={containerRef} className={`flex h-full ${isVertical ? "flex-col" : "flex-row"}`}>
+			<div
+				style={isVertical ? { height: `${split}%` } : { width: `${split}%` }}
+				className="overflow-hidden p-4"
+			>
+				{first}
 			</div>
 			<div
 				onMouseDown={handleMouseDown}
-				className="h-1 cursor-row-resize bg-[hsl(var(--border))] transition-colors hover:bg-[hsl(var(--ring))]"
+				className={
+					isVertical
+						? "h-1 cursor-row-resize bg-[hsl(var(--border))] transition-colors hover:bg-[hsl(var(--ring))]"
+						: "w-1 cursor-col-resize bg-[hsl(var(--border))] transition-colors hover:bg-[hsl(var(--ring))]"
+				}
 			/>
-			<div style={{ height: `${100 - topHeight}%` }} className="w-full overflow-hidden p-4">
-				{bottom}
+			<div
+				style={isVertical ? { height: `${100 - split}%` } : { width: `${100 - split}%` }}
+				className="overflow-hidden p-4"
+			>
+				{second}
 			</div>
 		</div>
 	);
