@@ -15,4 +15,12 @@ describe("bubbleSort.computeSteps", () => {
 		expect(lastStep.array.map((element) => element.value)).toEqual([1, 2, 3]);
 		expect(lastStep.sorted).toEqual([0, 1, 2]);
 	});
+
+	test("emits swap steps only when a compared pair is out of order", () => {
+		const swapSteps = bubbleSort.computeSteps([2, 1]);
+		const orderedSteps = bubbleSort.computeSteps([1, 2]);
+
+		expect(swapSteps.some((step) => step.swapped?.[0] === 0 && step.swapped?.[1] === 1)).toBe(true);
+		expect(orderedSteps.some((step) => step.swapped?.[0] === 0 && step.swapped?.[1] === 1)).toBe(false);
+	});
 });
