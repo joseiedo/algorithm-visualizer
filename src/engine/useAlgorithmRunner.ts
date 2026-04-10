@@ -1,12 +1,12 @@
 import { useState, useCallback, useMemo } from "react";
-import type { AlgorithmDefinition } from "@/algorithms/types";
+import type { AlgorithmDefinition, BaseState } from "@/algorithms/types";
 
-function computeSteps(algorithm: AlgorithmDefinition) {
+function computeSteps<TState extends BaseState>(algorithm: AlgorithmDefinition<TState>) {
 	const input = algorithm.defaultInput();
 	return algorithm.computeSteps(input);
 }
 
-export function useAlgorithmRunner(algorithm: AlgorithmDefinition) {
+export function useAlgorithmRunner<TState extends BaseState>(algorithm: AlgorithmDefinition<TState>) {
 	const steps = useMemo(() => computeSteps(algorithm), [algorithm]);
 	const [runnerState, setRunnerState] = useState(() => ({
 		algorithmId: algorithm.id,

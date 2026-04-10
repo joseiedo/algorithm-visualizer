@@ -1,9 +1,13 @@
 import { useState, useCallback } from "react";
 import { useParams, Navigate } from "react-router-dom";
 import { DEFAULT_ALGORITHM_ROUTE } from "@/app/routes";
-import { getAlgorithm, algorithms } from "@/algorithms/registry";
 import { useAlgorithmRunner } from "@/engine/useAlgorithmRunner";
 import { usePlayback } from "@/engine/usePlayback";
+import {
+	resolveAlgorithmView,
+	toggleLayoutDirection,
+	type LayoutDirection,
+} from "./algorithm-view-utils";
 import { Header } from "./layout/Header";
 import { SplitView } from "./layout/SplitView";
 import { VizPanel } from "./viz-panel/VizPanel";
@@ -12,16 +16,16 @@ import { PlaybackControls } from "./controls/PlaybackControls";
 
 export function AlgorithmView() {
 	const { id } = useParams();
-	const algorithm = getAlgorithm(id ?? "") ?? algorithms[0];
+	const { algorithm, shouldRedirect } = resolveAlgorithmView(id);
 	const { currentState, isDone, canStepBack, step, stepBack, reset } = useAlgorithmRunner(algorithm);
 	const playback = usePlayback({ step, reset });
-	const [layout, setLayout] = useState<"horizontal" | "vertical">("vertical");
+	const [layout, setLayout] = useState<LayoutDirection>("vertical");
 
 	const toggleLayout = useCallback(() => {
-		setLayout((prev) => (prev === "vertical" ? "horizontal" : "vertical"));
+		setLayout((previousLayout) => toggleLayoutDirection(previousLayout));
 	}, []);
 
-	if (id && !getAlgorithm(id)) {
+	if (shouldRedirect) {
 		return <Navigate to={DEFAULT_ALGORITHM_ROUTE} replace />;
 	}
 
