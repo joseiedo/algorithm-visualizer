@@ -18,6 +18,8 @@ export interface SortingState extends BaseState {
 
 export type AlgorithmCategory = "sorting" | "curves" | "pathfinding";
 
+export type AlgorithmRenderer = "sorting" | "bezier" | "pathfinding";
+
 export interface AlgorithmDefinition<TState extends BaseState = BaseState> {
 	id: string;
 	name: string;
@@ -25,5 +27,5 @@ export interface AlgorithmDefinition<TState extends BaseState = BaseState> {
 	sourceCode: string;
 	defaultInput: () => unknown;
 	computeSteps: (input: unknown) => TState[];
-	renderer: "sorting" | "bezier" | "pathfinding";
+	renderer: AlgorithmRenderer;
 }

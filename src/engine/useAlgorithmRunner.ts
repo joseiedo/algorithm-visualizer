@@ -1,45 +1,66 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import type { AlgorithmDefinition } from "@/algorithms/types";
-import { StepEngine } from "./StepEngine";
 
-function createEngine(algorithm: AlgorithmDefinition) {
+function computeSteps(algorithm: AlgorithmDefinition) {
 	const input = algorithm.defaultInput();
-	const steps = algorithm.computeSteps(input);
-	return new StepEngine(steps);
+	return algorithm.computeSteps(input);
 }
 
 export function useAlgorithmRunner(algorithm: AlgorithmDefinition) {
-	const [engine, setEngine] = useState(() => createEngine(algorithm));
-	const [algorithmId, setAlgorithmId] = useState(algorithm.id);
-	const [, forceRender] = useState(0);
-
-	if (algorithm.id !== algorithmId) {
-		setAlgorithmId(algorithm.id);
-		setEngine(createEngine(algorithm));
-	}
-
-	const rerender = useCallback(() => forceRender((n) => n + 1), []);
+	const steps = useMemo(() => computeSteps(algorithm), [algorithm]);
+	const [runnerState, setRunnerState] = useState(() => ({
+		algorithmId: algorithm.id,
+		currentIndex: 0,
+	}));
+	const currentIndex = runnerState.algorithmId === algorithm.id
+		? runnerState.currentIndex
+		: 0;
+	const currentState = steps[currentIndex];
+	const isDone = currentIndex >= steps.length - 1;
+	const canStepBack = currentIndex > 0;
 
 	const step = useCallback(() => {
-		const hasMore = engine.stepForward();
-		rerender();
-		return hasMore;
-	}, [engine, rerender]);
+		if (currentIndex >= steps.length - 1) {
+			return false;
+		}
+
+		setRunnerState((previousState) => {
+			const previousIndex = previousState.algorithmId === algorithm.id
+				? previousState.currentIndex
+				: 0;
+
+			return {
+				algorithmId: algorithm.id,
+				currentIndex: previousIndex + 1,
+			};
+		});
+		return true;
+	}, [algorithm.id, currentIndex, steps.length]);
 
 	const stepBack = useCallback(() => {
-		engine.stepBack();
-		rerender();
-	}, [engine, rerender]);
+		setRunnerState((previousState) => {
+			const previousIndex = previousState.algorithmId === algorithm.id
+				? previousState.currentIndex
+				: 0;
+
+			return {
+				algorithmId: algorithm.id,
+				currentIndex: Math.max(0, previousIndex - 1),
+			};
+		});
+	}, [algorithm.id]);
 
 	const reset = useCallback(() => {
-		engine.reset();
-		rerender();
-	}, [engine, rerender]);
+		setRunnerState({
+			algorithmId: algorithm.id,
+			currentIndex: 0,
+		});
+	}, [algorithm.id]);
 
 	return {
-		currentState: engine.current,
-		isDone: engine.isDone,
-		canStepBack: engine.canStepBack,
+		currentState,
+		isDone,
+		canStepBack,
 		step,
 		stepBack,
 		reset,

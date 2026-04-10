@@ -1,9 +1,9 @@
 import { SortingRenderer } from "./SortingRenderer";
-import type { BaseState, SortingState } from "@/algorithms/types";
+import type { AlgorithmRenderer, BaseState, SortingState } from "@/algorithms/types";
 
 interface VizPanelProps {
   state: BaseState | null;
-  renderer: string;
+  renderer: AlgorithmRenderer;
 }
 
 export function VizPanel({ state, renderer }: VizPanelProps) {
