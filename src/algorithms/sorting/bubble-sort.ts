@@ -67,6 +67,34 @@ function createNoSwapExplanation(left: number, right: number, leftIndex: number,
 	return `arr[${leftIndex}] = ${left} <= arr[${rightIndex}] = ${right}. Already in order — no swap needed.`;
 }
 
+function appendSwapSteps(
+	steps: SortingState[],
+	arr: SortingElement[],
+	sorted: number[],
+	leftIndex: number,
+	rightIndex: number,
+	tempVal: number,
+) {
+	steps.push(createStep(arr, sorted, {
+		line: LINES.TEMP_ASSIGNMENT,
+		comparing: [leftIndex, rightIndex],
+		explanation: `Store arr[${leftIndex}] = ${tempVal} in temp variable.`,
+		annotations: { [LINES.TEMP_ASSIGNMENT]: `temp = ${tempVal}` },
+	}));
+	[arr[leftIndex], arr[rightIndex]] = [arr[rightIndex], arr[leftIndex]];
+	steps.push(createStep(arr, sorted, {
+		line: LINES.LEFT_ASSIGNMENT,
+		swapped: [leftIndex, rightIndex],
+		explanation: `Set arr[${leftIndex}] = arr[${rightIndex}] = ${arr[leftIndex].value}.`,
+	}));
+	steps.push(createStep(arr, sorted, {
+		line: LINES.RIGHT_ASSIGNMENT,
+		swapped: [leftIndex, rightIndex],
+		explanation: `Set arr[${rightIndex}] = temp = ${arr[rightIndex].value}. Swap complete!`,
+	}));
+	steps.push(createStep(arr, sorted, { line: LINES.SWAP_BLOCK_END }));
+}
+
 function computeSteps(input: unknown): SortingState[] {
 	const steps: SortingState[] = [];
 	const raw = input as number[];
@@ -93,12 +121,7 @@ function computeSteps(input: unknown): SortingState[] {
 					explanation: createComparisonExplanation(leftValue, rightValue, j, j + 1),
 					annotations: { [LINES.COMPARISON]: createComparisonAnnotation(leftValue, rightValue, true) },
 				}));
-				const tempVal = leftValue;
-				steps.push(createStep(arr, sorted, { line: LINES.TEMP_ASSIGNMENT, comparing: [j, j + 1], explanation: `Store arr[${j}] = ${tempVal} in temp variable.`, annotations: { [LINES.TEMP_ASSIGNMENT]: `temp = ${tempVal}` } }));
-				[arr[j], arr[j + 1]] = [arr[j + 1], arr[j]];
-				steps.push(createStep(arr, sorted, { line: LINES.LEFT_ASSIGNMENT, swapped: [j, j + 1], explanation: `Set arr[${j}] = arr[${j + 1}] = ${arr[j].value}.` }));
-				steps.push(createStep(arr, sorted, { line: LINES.RIGHT_ASSIGNMENT, swapped: [j, j + 1], explanation: `Set arr[${j + 1}] = temp = ${arr[j + 1].value}. Swap complete!` }));
-				steps.push(createStep(arr, sorted, { line: LINES.SWAP_BLOCK_END }));
+				appendSwapSteps(steps, arr, sorted, j, j + 1, leftValue);
 			} else {
 				steps.push(createStep(arr, sorted, {
 					line: LINES.COMPARISON,
