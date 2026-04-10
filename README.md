@@ -2,7 +2,8 @@
 
 `algorithm-visualizer` is a small React + TypeScript app for exploring algorithms step by step.
 
-The project renders an algorithm visualization side by side with its source code, then lets you move forward and backward through precomputed states. Each step can include an explanation, active code line highlighting, and inline annotations to make the algorithm easier to follow.
+<img width="1500" height="836" alt="image" src="https://github.com/user-attachments/assets/28e2a6f1-64c9-42d6-845c-0d042284e43a" />
+
 
 ## Current examples
 
