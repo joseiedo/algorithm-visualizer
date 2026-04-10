@@ -1,3 +1,4 @@
+import { motion } from "framer-motion";
 import type { BezierState, Point } from "@/algorithms/types";
 
 interface BezierRendererProps {
@@ -32,30 +33,40 @@ export function BezierRenderer({ state }: BezierRendererProps) {
 						opacity="0.5"
 					/>
 					{curvePoints.length >= 2 && (
-						<polyline
+						<motion.polyline
 							points={toPolylinePoints(curvePoints)}
 							fill="none"
 							stroke="#34d399"
 							strokeWidth="4"
 							strokeLinecap="round"
 							strokeLinejoin="round"
+							initial={{ pathLength: 0, opacity: 0.4 }}
+							animate={{ pathLength: 1, opacity: 1 }}
+							transition={{ duration: 0.45, ease: "easeOut" }}
 						/>
 					)}
 					{firstLevelPoints.length === 2 && (
-						<line
-							x1={firstLevelPoints[0].x}
-							y1={firstLevelPoints[0].y}
-							x2={firstLevelPoints[1].x}
-							y2={firstLevelPoints[1].y}
+						<motion.line
+							initial={false}
+							animate={{
+								x1: firstLevelPoints[0].x,
+								y1: firstLevelPoints[0].y,
+								x2: firstLevelPoints[1].x,
+								y2: firstLevelPoints[1].y,
+							}}
 							stroke="#fbbf24"
 							strokeWidth="3"
 							strokeDasharray="6 6"
+							transition={{ duration: 0.35, ease: "easeInOut" }}
 						/>
 					)}
 
 					{controlPoints.map((point, index) => (
 						<g key={`control-${index}`}>
-							<circle
+							<motion.circle
+								initial={false}
+								animate={{ cx: point.x, cy: point.y }}
+								transition={{ duration: 0.3, ease: "easeInOut" }}
 								cx={point.x}
 								cy={point.y}
 								r="8"
@@ -76,46 +87,51 @@ export function BezierRenderer({ state }: BezierRendererProps) {
 
 					{firstLevelPoints.map((point, index) => (
 						<g key={`first-level-${index}`}>
-							<circle
-								cx={point.x}
-								cy={point.y}
+							<motion.circle
+								initial={{ scale: 0.6, opacity: 0 }}
+								animate={{ cx: point.x, cy: point.y, scale: 1, opacity: 1 }}
+								exit={{ scale: 0.6, opacity: 0 }}
 								r="7"
 								fill="#fbbf24"
 								stroke="rgba(15, 23, 42, 0.85)"
 								strokeWidth="2"
+								transition={{ type: "spring", stiffness: 260, damping: 20 }}
 							/>
-							<text
-								x={point.x}
-								y={point.y + 24}
+							<motion.text
+								initial={{ opacity: 0, y: point.y + 18 }}
+								animate={{ x: point.x, y: point.y + 24, opacity: 1 }}
 								textAnchor="middle"
 								fill="#fde68a"
 								fontSize="12"
+								transition={{ duration: 0.3, ease: "easeOut" }}
 							>
 								{`q${index}`}
-							</text>
+							</motion.text>
 						</g>
 					))}
 
 					{pointOnCurve && (
 						<g>
-							<circle
-								cx={pointOnCurve.x}
-								cy={pointOnCurve.y}
+							<motion.circle
+								initial={{ scale: 0.7, opacity: 0 }}
+								animate={{ cx: pointOnCurve.x, cy: pointOnCurve.y, scale: 1, opacity: 1 }}
 								r="9"
 								fill="#34d399"
 								stroke="rgba(6, 78, 59, 0.9)"
 								strokeWidth="3"
+								transition={{ type: "spring", stiffness: 240, damping: 18 }}
 							/>
-							<text
-								x={pointOnCurve.x}
-								y={pointOnCurve.y - 18}
+							<motion.text
+								initial={{ opacity: 0, y: pointOnCurve.y - 10 }}
+								animate={{ x: pointOnCurve.x, y: pointOnCurve.y - 18, opacity: 1 }}
 								textAnchor="middle"
 								fill="#a7f3d0"
 								fontSize="12"
 								fontWeight="600"
+								transition={{ duration: 0.25, ease: "easeOut" }}
 							>
 								b
-							</text>
+							</motion.text>
 						</g>
 					)}
 				</svg>
