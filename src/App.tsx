@@ -4,7 +4,7 @@ import { HomePage } from "@/components/HomePage";
 
 export default function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename={import.meta.env.BASE_URL}>
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/:category/:id" element={<AlgorithmView />} />
