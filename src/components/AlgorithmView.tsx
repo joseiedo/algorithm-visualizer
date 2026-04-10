@@ -19,7 +19,7 @@ export function AlgorithmView() {
 	const { algorithm, shouldRedirect } = resolveAlgorithmView(id);
 	const { currentState, isDone, canStepBack, step, stepBack, reset } = useAlgorithmRunner(algorithm);
 	const playback = usePlayback({ step, reset });
-	const [layout, setLayout] = useState<LayoutDirection>("vertical");
+	const [layout, setLayout] = useState<LayoutDirection>("horizontal");
 
 	const toggleLayout = useCallback(() => {
 		setLayout((previousLayout) => toggleLayoutDirection(previousLayout));
@@ -49,6 +49,12 @@ export function AlgorithmView() {
 				layout={layout}
 				onToggleLayout={toggleLayout}
 			/>
+			<div className="border-b border-[hsl(var(--border))] px-4 py-4">
+				<h2 className="text-xl font-semibold tracking-tight">{algorithm.name}</h2>
+				<p className="mt-1 max-w-3xl text-sm leading-relaxed text-[hsl(var(--muted-foreground))]">
+					{algorithm.description}
+				</p>
+			</div>
 			<div className="flex-1 overflow-hidden">
 				<SplitView
 					direction={layout}

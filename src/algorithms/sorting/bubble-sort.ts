@@ -150,6 +150,7 @@ function defaultInput() {
 export const bubbleSort: AlgorithmDefinition<SortingState> = {
 	id: "bubble-sort",
 	name: "Bubble Sort",
+	description: "Bubble Sort repeatedly compares adjacent elements and swaps them when they are out of order, causing larger values to bubble toward the end on each pass.",
 	category: "sorting",
 	sourceCode,
 	defaultInput,

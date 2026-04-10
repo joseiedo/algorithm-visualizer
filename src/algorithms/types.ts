@@ -23,6 +23,7 @@ export type AlgorithmRenderer = "sorting" | "bezier" | "pathfinding";
 export interface AlgorithmDefinition<TState extends BaseState = BaseState> {
 	id: string;
 	name: string;
+	description: string;
 	category: AlgorithmCategory;
 	sourceCode: string;
 	defaultInput: () => unknown;

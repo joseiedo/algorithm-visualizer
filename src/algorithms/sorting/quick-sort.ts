@@ -302,6 +302,7 @@ function defaultInput() {
 export const quickSort: AlgorithmDefinition<SortingState> = {
 	id: "quick-sort",
 	name: "Quick Sort",
+	description: "Quick Sort picks a pivot, partitions the array around it, and then recursively sorts the left and right partitions.",
 	category: "sorting",
 	sourceCode,
 	defaultInput,
