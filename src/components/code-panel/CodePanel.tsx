@@ -1,11 +1,35 @@
 import { useEffect, useState } from "react";
-import { createHighlighter, type Highlighter } from "shiki";
+import type { HighlighterCore } from "shiki/core";
 import {
 	buildActiveLineDecorations,
 	CODE_PANEL_LANGUAGE,
 	CODE_PANEL_THEME,
 	injectAnnotations,
 } from "./code-panel-utils";
+
+let highlighterPromise: Promise<HighlighterCore> | null = null;
+
+function getHighlighter() {
+	if (!highlighterPromise) {
+		highlighterPromise = Promise.all([
+			import("shiki/core"),
+			import("shiki/engine/javascript"),
+			import("shiki/dist/langs/java.mjs"),
+			import("shiki/dist/themes/vitesse-dark.mjs"),
+		]).then(([
+			{ createHighlighterCore },
+			{ createJavaScriptRegexEngine },
+			{ default: java },
+			{ default: vitesseDark },
+		]) => createHighlighterCore({
+			themes: [vitesseDark],
+			langs: [java],
+			engine: createJavaScriptRegexEngine(),
+		}));
+	}
+
+	return highlighterPromise;
+}
 
 interface CodePanelProps {
 	sourceCode: string;
@@ -14,13 +38,10 @@ interface CodePanelProps {
 }
 
 export function CodePanel({ sourceCode, activeLine, annotations }: CodePanelProps) {
-	const [highlighter, setHighlighter] = useState<Highlighter | null>(null);
+	const [highlighter, setHighlighter] = useState<HighlighterCore | null>(null);
 
 	useEffect(() => {
-		createHighlighter({
-			themes: [CODE_PANEL_THEME],
-			langs: [CODE_PANEL_LANGUAGE],
-		}).then(setHighlighter);
+		getHighlighter().then(setHighlighter);
 	}, []);
 
 	if (!highlighter) {
