@@ -1,6 +1,7 @@
 import { useState, useCallback } from "react";
 import { useParams, Navigate } from "react-router-dom";
 import { DEFAULT_ALGORITHM_ROUTE } from "@/app/routes";
+import type { AlgorithmDefinition, VisualizationState } from "@/algorithms/types";
 import { useAlgorithmRunner } from "@/engine/useAlgorithmRunner";
 import { usePlayback } from "@/engine/usePlayback";
 import {
@@ -17,7 +18,8 @@ import { PlaybackControls } from "./controls/PlaybackControls";
 export function AlgorithmView() {
 	const { id } = useParams();
 	const { algorithm, shouldRedirect } = resolveAlgorithmView(id);
-	const { currentState, isDone, canStepBack, step, stepBack, reset } = useAlgorithmRunner(algorithm);
+	const selectedAlgorithm = algorithm as AlgorithmDefinition<VisualizationState>;
+	const { currentState, isDone, canStepBack, step, stepBack, reset } = useAlgorithmRunner(selectedAlgorithm);
 	const playback = usePlayback({ step, reset });
 	const [layout, setLayout] = useState<LayoutDirection>("horizontal");
 

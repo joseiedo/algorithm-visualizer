@@ -10,12 +10,13 @@ function createAlgorithm(
 	return {
 		id,
 		name: id,
+		description: `${id} test algorithm`,
 		category: "sorting",
 		renderer: "sorting",
 		sourceCode: "",
 		defaultInput: () => null,
 		computeSteps: () => lines.map((line) => ({ line })),
-	}
+	};
 }
 
 describe("useAlgorithmRunner", () => {
@@ -26,7 +27,6 @@ describe("useAlgorithmRunner", () => {
 		const { result, rerender } = renderHook(({ algorithm }) =>
 			useAlgorithmRunner(algorithm), { initialProps: { algorithm: algorithmA } },
 		);
-
 
 		act(() => {
 			result.current.step();
@@ -55,4 +55,4 @@ describe("useAlgorithmRunner", () => {
 		expect(result.current.isDone).toBe(false);
 		expect(result.current.canStepBack).toBe(true);
 	});
-})
+});

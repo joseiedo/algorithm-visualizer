@@ -9,12 +9,27 @@ export interface SortingElement {
 	value: number;
 }
 
+export interface Point {
+	x: number;
+	y: number;
+}
+
 export interface SortingState extends BaseState {
 	array: SortingElement[];
 	comparing?: [number, number];
 	swapped?: [number, number];
 	sorted?: number[];
 }
+
+export interface BezierState extends BaseState {
+	controlPoints: [Point, Point, Point];
+	firstLevelPoints: Point[];
+	pointOnCurve?: Point;
+	curvePoints: Point[];
+	t: number;
+}
+
+export type VisualizationState = SortingState | BezierState;
 
 export type AlgorithmCategory = "sorting" | "curves" | "pathfinding";
 
