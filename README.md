@@ -1,73 +1,81 @@
-# React + TypeScript + Vite
+# Algorithm Visualizer
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+`algorithm-visualizer` is a small React + TypeScript app for exploring algorithms step by step.
 
-Currently, two official plugins are available:
+The project renders an algorithm visualization side by side with its source code, then lets you move forward and backward through precomputed states. Each step can include an explanation, active code line highlighting, and inline annotations to make the algorithm easier to follow.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Current examples
 
-## React Compiler
+- Bubble Sort
+- Quick Sort
+- Quadratic Bezier Curve
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Tech stack
 
-## Expanding the ESLint configuration
+- React
+- TypeScript
+- Vite
+- React Router
+- Tailwind CSS
+- Framer Motion
+- Vitest
+- Shiki
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Getting started
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+Install dependencies:
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Start the development server:
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm run dev
 ```
+
+Build the project:
+
+```bash
+npm run build
+```
+
+Run the test suite once:
+
+```bash
+npm test
+```
+
+Run tests in watch mode:
+
+```bash
+npm run test:watch
+```
+
+## How it works
+
+Each algorithm exposes a definition with:
+
+- metadata such as name, category, and description
+- source code shown in the code panel
+- a `defaultInput()` function
+- a `computeSteps()` function that returns every visualization state ahead of time
+- a renderer type used by the visualization panel
+
+The app precomputes all states for a selected algorithm, then the playback engine simply moves through the list of steps. This keeps stepping, rewinding, and autoplay logic simple and predictable.
+
+## Project structure
+
+- `src/algorithms/`: algorithm definitions and registry
+- `src/components/`: page layout, controls, code panel, and visualization renderers
+- `src/engine/`: step runner and playback logic
+- `src/app/`: routes and app-level wiring
+
+## Adding a new algorithm
+
+1. Create a new algorithm definition in `src/algorithms/`.
+2. Return a full list of visualization states from `computeSteps()`.
+3. Add or reuse a renderer in `src/components/viz-panel/`.
+4. Register the algorithm in `src/algorithms/registry.ts`.
+
