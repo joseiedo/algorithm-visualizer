@@ -4,8 +4,8 @@ import tailwindcss from '@tailwindcss/vite'
 import path from 'path'
 
 // https://vite.dev/config/
-export default defineConfig({
-  base: '/algorithm-visualizer/',
+export default defineConfig(({ command }) => ({
+  base: command === 'serve' ? '/' : '/algorithm-visualizer/',
   plugins: [react(), tailwindcss()],
   test: {
     environment: 'jsdom',
@@ -15,4 +15,4 @@ export default defineConfig({
       '@': path.resolve(__dirname, 'src'),
     },
   },
-})
+}))
