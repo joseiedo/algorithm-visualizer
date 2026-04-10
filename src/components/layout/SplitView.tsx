@@ -1,4 +1,9 @@
 import { useState, useCallback, useRef, type ReactNode } from "react";
+import {
+	clampSplitPercentage,
+	DEFAULT_SPLIT_PERCENTAGE,
+	toSplitPercentage,
+} from "./split-view-utils";
 
 interface SplitViewProps {
 	first: ReactNode;
@@ -7,7 +12,7 @@ interface SplitViewProps {
 }
 
 export function SplitView({ first, second, direction }: SplitViewProps) {
-	const [split, setSplit] = useState(55);
+	const [split, setSplit] = useState(DEFAULT_SPLIT_PERCENTAGE);
 	const containerRef = useRef<HTMLDivElement>(null);
 	const isVertical = direction === "vertical";
 
@@ -15,10 +20,8 @@ export function SplitView({ first, second, direction }: SplitViewProps) {
 		const onMouseMove = (e: MouseEvent) => {
 			if (!containerRef.current) return;
 			const rect = containerRef.current.getBoundingClientRect();
-			const pct = isVertical
-				? ((e.clientY - rect.top) / rect.height) * 100
-				: ((e.clientX - rect.left) / rect.width) * 100;
-			setSplit(Math.min(80, Math.max(20, pct)));
+			const pct = toSplitPercentage(direction, rect, e);
+			setSplit(clampSplitPercentage(pct));
 		};
 
 		const onMouseUp = () => {
@@ -32,7 +35,7 @@ export function SplitView({ first, second, direction }: SplitViewProps) {
 		document.addEventListener("mouseup", onMouseUp);
 		document.body.style.cursor = isVertical ? "row-resize" : "col-resize";
 		document.body.style.userSelect = "none";
-	}, [isVertical]);
+	}, [direction, isVertical]);
 
 	return (
 		<div ref={containerRef} className={`flex h-full ${isVertical ? "flex-col" : "flex-row"}`}>
