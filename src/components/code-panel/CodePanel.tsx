@@ -65,7 +65,7 @@ export function CodePanel({ sourceCode, activeLine, annotations }: CodePanelProp
 	return (
 		<div className="flex h-full items-center justify-center">
 			<div
-				className="overflow-auto rounded-lg bg-[#121212] p-4 font-mono text-sm [&_.active-line]:bg-[hsl(var(--accent))] [&_.shiki]:!bg-transparent [&_pre]:!bg-transparent"
+				className="code-snippet-scrollbar max-h-full max-w-full overflow-auto rounded-lg bg-[#121212] p-4 font-mono text-sm [&_.active-line]:bg-[hsl(var(--accent))] [&_.shiki]:!bg-transparent [&_pre]:!bg-transparent"
 				dangerouslySetInnerHTML={{ __html: html }}
 			/>
 		</div>
