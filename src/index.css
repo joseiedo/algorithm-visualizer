@@ -25,3 +25,29 @@ body {
   color: hsl(var(--foreground));
   font-family: system-ui, -apple-system, sans-serif;
 }
+
+.code-snippet-scrollbar {
+  scrollbar-color: hsl(var(--muted-foreground)) #000;
+  scrollbar-width: thin;
+}
+
+.code-snippet-scrollbar::-webkit-scrollbar {
+  height: 10px;
+  width: 10px;
+  background-color: #000;
+}
+
+.code-snippet-scrollbar::-webkit-scrollbar-track {
+  background-color: #000;
+  border-radius: 8px;
+}
+
+.code-snippet-scrollbar::-webkit-scrollbar-thumb {
+  background-color: hsl(var(--muted-foreground));
+  border: 2px solid #000;
+  border-radius: 8px;
+}
+
+.code-snippet-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: hsl(var(--foreground));
+}
