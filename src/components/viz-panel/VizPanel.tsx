@@ -4,7 +4,7 @@ import type {
 	SortingState,
 	VisualizationState,
 } from "@/algorithms/types";
-import { BezierRenderer } from "./BezierRenderer";
+import { BezierRenderer } from "./bezier/BezierRenderer";
 import { SortingRenderer } from "./SortingRenderer";
 
 interface VizPanelProps {

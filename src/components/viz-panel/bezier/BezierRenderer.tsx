@@ -1,5 +1,12 @@
 import { motion } from "framer-motion";
 import type { BezierState, Point } from "@/algorithms/types";
+import {
+	getCurvePointLabelAnimation,
+	getLabelBoxesForPoints,
+	getPointMarkerBoxesForPoints,
+	TRACED_CURVE_VISIBLE_INITIAL_ANIMATION,
+	toPolylinePoints,
+} from "./bezier-renderer-utils";
 
 interface BezierRendererProps {
 	state: BezierState;
@@ -7,18 +14,36 @@ interface BezierRendererProps {
 
 const VIEW_BOX_WIDTH = 520;
 const VIEW_BOX_HEIGHT = 320;
+const FIRST_LEVEL_LABEL_OFFSET_Y = 24;
+const CONTROL_POINT_LABEL_OFFSET_Y = -16;
+const LABEL_WIDTH = 12;
+const LABEL_HEIGHT = 14;
+const CONTROL_POINT_RADIUS = 8;
+const FIRST_LEVEL_POINT_RADIUS = 7;
 
 function formatPoint(point: Point) {
 	return `${Math.round(point.x)}, ${Math.round(point.y)}`;
 }
 
-function toPolylinePoints(points: Point[]) {
-	return points.map((point) => `${point.x},${point.y}`).join(" ");
-}
-
 export function BezierRenderer({ state }: BezierRendererProps) {
 	const { controlPoints, firstLevelPoints, pointOnCurve, curvePoints, explanation, t } = state;
 	const [p0, p1, p2] = controlPoints;
+	const firstLevelLabelBoxes = getLabelBoxesForPoints(firstLevelPoints, {
+		labelOffsetY: FIRST_LEVEL_LABEL_OFFSET_Y,
+		labelWidth: LABEL_WIDTH,
+		labelHeight: LABEL_HEIGHT,
+	});
+	const controlPointLabelBoxes = getLabelBoxesForPoints(controlPoints, {
+		labelOffsetY: CONTROL_POINT_LABEL_OFFSET_Y,
+		labelWidth: LABEL_WIDTH,
+		labelHeight: LABEL_HEIGHT,
+	});
+	const occupiedLabelBoxes = [
+		...controlPointLabelBoxes,
+		...getPointMarkerBoxesForPoints(controlPoints, CONTROL_POINT_RADIUS),
+		...firstLevelLabelBoxes,
+		...getPointMarkerBoxesForPoints(firstLevelPoints, FIRST_LEVEL_POINT_RADIUS),
+	];
 
 	return (
 		<div className="flex h-full flex-col items-center justify-center gap-6 p-4">
@@ -40,7 +65,7 @@ export function BezierRenderer({ state }: BezierRendererProps) {
 							strokeWidth="4"
 							strokeLinecap="round"
 							strokeLinejoin="round"
-							initial={{ pathLength: 0, opacity: 0.4 }}
+							initial={TRACED_CURVE_VISIBLE_INITIAL_ANIMATION}
 							animate={{ pathLength: 1, opacity: 1 }}
 							transition={{ duration: 0.45, ease: "easeOut" }}
 						/>
@@ -123,7 +148,9 @@ export function BezierRenderer({ state }: BezierRendererProps) {
 							/>
 							<motion.text
 								initial={{ opacity: 0, y: pointOnCurve.y - 10 }}
-								animate={{ x: pointOnCurve.x, y: pointOnCurve.y - 18, opacity: 1 }}
+								animate={getCurvePointLabelAnimation(pointOnCurve, {
+									occupiedLabelBoxes,
+								})}
 								textAnchor="middle"
 								fill="#a7f3d0"
 								fontSize="12"
